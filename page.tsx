@@ -6,14 +6,27 @@ export default function Home() {
   const [contractInput, setContractInput] = useState('');
   const [messages, setMessages] = useState([]);
 
-  const predictAContract = () => {
-    const standardMessage = 'We are analyzing your contract terms...';
-    // Add the user's input and the standard response to the message history
+  const predictAContract = async () => {
+    // Send the query to the API endpoint
+    const response = await fetch('/api/openai', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query: contractInput }),
+    });
+
+    // Parse the response
+    const data = await response.json();
+    const standardMessage = data.response;
+
+    // Update the message history
     setMessages((prevMessages) => [
       ...prevMessages,
       { sender: 'User', text: contractInput },
       { sender: 'Assistant', text: standardMessage },
     ]);
+
     // Clear the input field
     setContractInput('');
   };
